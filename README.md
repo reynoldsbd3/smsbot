@@ -15,7 +15,8 @@ using the Twilio API.
   ```
 
 3. Copy config-example.json to the current working directory and rename it to
-  config.json, replacing its contents with valid Twilio API credentials
+  config.json, replacing its contents with valid
+  [Twilio API](https://www.twilio.com/try-twilio) credentials
 
 4. Run the smsbot command.
 
