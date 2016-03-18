@@ -18,8 +18,7 @@ func getMessageSource(c *config.Config) message.Source {
     
     src.Sources = []message.Source{
         message.NewStaticSource("Static message 1", "foo.com"),
-        message.NewStaticSource("Static message 2", "bar.org"),
-        message.NewStaticSource("Static message 3", "baz.net"),
+        message.NewQuoteSource("love"),
     }
     
     return src
@@ -39,6 +38,7 @@ func main() {
         time.Sleep(30 * time.Second)
     })
     
+    // Left in to test without actually dispatching messages
     // go func() {
     //     for msg := range messages {
     //         log.Printf("Message received: %s", msg.Text)
