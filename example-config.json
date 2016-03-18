@@ -1,0 +1,8 @@
+{
+    "twilioSid": "XXX",
+    "twilioToken": "XXX",
+    "twilioNumber": "+15555551234",
+    "recipients": [
+        "+15555556789"
+    ]
+}
