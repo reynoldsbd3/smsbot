@@ -6,7 +6,7 @@ using the Twilio API.
 
 # Getting Started
 
-1. (Install Go)[https://golang.org/doc/install] and configure $GOPATH
+1. [Install Go](https://golang.org/doc/install) and configure $GOPATH
 
 2. Insall smsbot:
 
