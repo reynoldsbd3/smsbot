@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"fmt"
@@ -6,17 +6,17 @@ import (
 
 	"github.com/sfreiberg/gotwilio"
 
-	"github.com/reynoldsbd3/smsbot/core"
 	"github.com/reynoldsbd3/smsbot/message"
 )
 
 
 // Waits for messages on the channel and dispatches them to all recipients using
 // the given config.Config
-func dispatchMessages(messages chan *message.Message, c *core.Core) {
+func dispatchMessages(messages chan *message.Message, c *Core) {
 
 	t := gotwilio.NewTwilioClient(c.TwilioSid, c.TwilioToken)
 
+    log.Print("Starting message dispatch loop")
 	for msg := range messages {
 
 		log.Printf("Dispatching message from %s", msg.Source)

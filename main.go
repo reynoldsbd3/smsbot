@@ -4,10 +4,8 @@ import (
     "log"
     "os"
     "os/signal"
-    "time"
     
     "github.com/reynoldsbd3/smsbot/core"
-    "github.com/reynoldsbd3/smsbot/message"
 )
 
 
@@ -19,19 +17,7 @@ func main() {
     c, err := core.LoadCore("config.json")
     if err != nil { log.Fatal(err) }
     
-    log.Print("Building message pipeline")
-    messages := message.Timer(c.Sources, func() {
-        time.Sleep(30 * time.Second)
-    })
-    
-    // Left in to test without actually dispatching messages
-    // go func() {
-    //     for msg := range messages {
-    //         log.Printf("Message received: %s - %s", msg.Text, msg.URL)
-    //     }
-    // }()
-    
-    go dispatchMessages(messages, c)
+    c.Run()
     
     waitUntilInterrupted()
     

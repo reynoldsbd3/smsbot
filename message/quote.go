@@ -88,7 +88,7 @@ func (qs *QuoteSource) GetMessage() (*Message, error) {
         return nil, err
     }
     
-    if r.Failure > 0 {
+    if len(r.Contents.Quotes) <= 0 {
         return nil, fmt.Errorf("failed to query category: %s", qs.Category)
     }
     

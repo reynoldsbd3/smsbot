@@ -2,7 +2,9 @@ package core
 
 import (
     "encoding/json"
+    "log"
     "os"
+    "time"
     
     "github.com/reynoldsbd3/smsbot/message"
 )
@@ -41,4 +43,24 @@ func LoadCore(path string) (c *Core, err error) {
     if err != nil { c = nil }
     
     return c, err
+}
+
+
+// Run builds and starts the message pipeline that the core is configured with
+// in a new goroutine.
+func (c *Core) Run() {
+    
+    log.Print("Building mesage pipeline")
+    m := message.Timer(c.Sources, func() {
+        time.Sleep(3 * time.Second)
+    })
+    
+    // Left in to test without actually dispatching messages
+    // go func() {
+    //     for msg := range m {
+    //         log.Printf("Message received: %s - %s", msg.Text, msg.URL)
+    //     }
+    // }()
+    
+    go dispatchMessages(m, c)
 }
