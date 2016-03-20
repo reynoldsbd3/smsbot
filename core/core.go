@@ -1,4 +1,4 @@
-package config
+package core
 
 import (
     "encoding/json"
@@ -7,9 +7,9 @@ import (
     "github.com/reynoldsbd3/smsbot/message"
 )
 
-// Config holds configuration data for smsbot. Can be easily loaded from a JSON
-// file.
-type Config struct {
+// Core represents the core configuration and behavior of smsbot. It coordinates
+// all message sources and provides facilities for building a message pipeline.
+type Core struct {
     
     // Twilio account SID
     TwilioSid string `json:"twilioSid"`
@@ -27,16 +27,16 @@ type Config struct {
     Sources *message.CompositeSource `json:"sources"`
 }
 
-// NewConfig loads and returns a new Config using the given path to the
+// LoadCore loads and returns a new Core using the given path to the
 // configuration file
-func NewConfig(path string) (c *Config, err error) {
+func LoadCore(path string) (c *Core, err error) {
     
     r, err := os.Open(path)
     if err != nil { return nil, err }
     
     dec := json.NewDecoder(r)
     
-    c = &Config{}
+    c = &Core{}
     err = dec.Decode(c)
     if err != nil { c = nil }
     

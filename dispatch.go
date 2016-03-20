@@ -6,14 +6,14 @@ import (
 
 	"github.com/sfreiberg/gotwilio"
 
-	"github.com/reynoldsbd3/smsbot/config"
+	"github.com/reynoldsbd3/smsbot/core"
 	"github.com/reynoldsbd3/smsbot/message"
 )
 
 
 // Waits for messages on the channel and dispatches them to all recipients using
 // the given config.Config
-func dispatchMessages(messages chan *message.Message, c *config.Config) {
+func dispatchMessages(messages chan *message.Message, c *core.Core) {
 
 	t := gotwilio.NewTwilioClient(c.TwilioSid, c.TwilioToken)
 

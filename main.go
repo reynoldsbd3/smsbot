@@ -6,7 +6,7 @@ import (
     "os/signal"
     "time"
     
-    "github.com/reynoldsbd3/smsbot/config"
+    "github.com/reynoldsbd3/smsbot/core"
     "github.com/reynoldsbd3/smsbot/message"
 )
 
@@ -16,7 +16,7 @@ func main() {
     log.Println("Starting smsbot")
     
     log.Println("Loading configuration")
-    c, err := config.NewConfig("config.json")
+    c, err := core.LoadCore("config.json")
     if err != nil { log.Fatal(err) }
     
     log.Print("Building message pipeline")
