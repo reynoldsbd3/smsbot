@@ -3,9 +3,9 @@ package message
 // A StaticSource produces the same message each time GetMessage is called.
 type StaticSource struct {
     
-    message string
+    Message string `json:"message"`
     
-    url string
+    URL string `json:"url"`
 }
 
 // GetMessage returns the StaticSource's message
@@ -13,8 +13,8 @@ func (ss *StaticSource) GetMessage() (*Message, error) {
     
     return &Message{
         "static message source",
-        ss.message,
-        ss.url,
+        ss.Message,
+        ss.URL,
     }, nil
 }
 

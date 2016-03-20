@@ -11,20 +11,6 @@ import (
 )
 
 
-// Returns the message source used for this instance
-func getMessageSource(c *config.Config) message.Source {
-    
-    src := &message.CompositeSource{}
-    
-    src.Sources = []message.Source{
-        message.NewStaticSource("Static message 1", "foo.com"),
-        message.NewQuoteSource("love"),
-    }
-    
-    return src
-}
-
-
 func main() {
     
     log.Println("Starting smsbot")
@@ -34,14 +20,14 @@ func main() {
     if err != nil { log.Fatal(err) }
     
     log.Print("Building message pipeline")
-    messages := message.Timer(getMessageSource(c), func() {
+    messages := message.Timer(c.Sources, func() {
         time.Sleep(30 * time.Second)
     })
     
     // Left in to test without actually dispatching messages
     // go func() {
     //     for msg := range messages {
-    //         log.Printf("Message received: %s", msg.Text)
+    //         log.Printf("Message received: %s - %s", msg.Text, msg.URL)
     //     }
     // }()
     

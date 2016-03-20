@@ -4,5 +4,34 @@
     "twilioNumber": "+15555551234",
     "recipients": [
         "+15555556789"
+    ],
+    "sources": [
+        {
+            "type": "static",
+            "params": {
+                "message": "static message 1",
+                "url": "foo.com"
+            }
+        },
+        {
+            "type": "static",
+            "params": {
+                "message": "static message 2",
+                "url": "bar.net"
+            }
+        },
+        {
+            "type": "static",
+            "params": {
+                "message": "static message 3",
+                "url": "baz.org"
+            }
+        },
+        {
+          "type": "quote",
+          "params": {
+              "category": "art"
+          }  
+        }
     ]
 }

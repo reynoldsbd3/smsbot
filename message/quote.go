@@ -18,6 +18,9 @@ type result struct {
         Total int
     }
     
+    // Number of failed queries
+    Failure int
+    
     Contents struct{
         
         Quotes []struct{
@@ -49,7 +52,7 @@ type result struct {
 type QuoteSource struct {
     
     // The category that will be used to fetch the quote of the day
-    category string
+    Category string `json:"category"`
 }
 
 
@@ -67,7 +70,7 @@ func NewQuoteSource(category string) *QuoteSource {
 // given category
 func (qs *QuoteSource) GetMessage() (*Message, error) {
     
-    url := fmt.Sprintf("http://quotes.rest/qod.json?category=%s", qs.category)
+    url := fmt.Sprintf("http://quotes.rest/qod.json?category=%s", qs.Category)
     
     resp, err := http.Get(url)
     if err != nil {
@@ -85,9 +88,13 @@ func (qs *QuoteSource) GetMessage() (*Message, error) {
         return nil, err
     }
     
+    if r.Failure > 0 {
+        return nil, fmt.Errorf("failed to query category: %s", qs.Category)
+    }
+    
     return &Message{
-        fmt.Sprintf("They Said So Quote of the Day for %s", qs.category),
+        fmt.Sprintf("They Said So Quote of the Day for %s", qs.Category),
         fmt.Sprintf("%s - %s", r.Contents.Quotes[0].Quote, r.Contents.Quotes[0].Author),
-        fmt.Sprintf("https://theysaidso.com/qod?category=%s", qs.category),
+        fmt.Sprintf("https://theysaidso.com/qod?category=%s", qs.Category),
     }, nil
 }

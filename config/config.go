@@ -3,6 +3,8 @@ package config
 import (
     "encoding/json"
     "os"
+    
+    "github.com/reynoldsbd3/smsbot/message"
 )
 
 // Config holds configuration data for smsbot. Can be easily loaded from a JSON
@@ -20,6 +22,9 @@ type Config struct {
     
     // Numbers to send SMS's to
     Recipients []string `json:"recipients"`
+    
+    // List of sources from which to get messages
+    Sources *message.CompositeSource `json:"sources"`
 }
 
 // NewConfig loads and returns a new Config using the given path to the
