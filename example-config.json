@@ -1,10 +1,16 @@
 {
+    "debug": true,
     "twilioSid": "XXX",
     "twilioToken": "XXX",
     "twilioNumber": "+15555551234",
     "recipients": [
         "+15555556789"
     ],
+    "time": {
+        "duration": "5s",
+        "minimum": "2s",
+        "maximum": "4s"
+    },
     "sources": [
         {
             "type": "static",
@@ -30,7 +36,7 @@
         {
           "type": "quote",
           "params": {
-              "category": "art"
+              "category": "love"
           }  
         }
     ]

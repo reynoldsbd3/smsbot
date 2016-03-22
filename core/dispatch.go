@@ -12,7 +12,7 @@ import (
 
 // Waits for messages on the channel and dispatches them to all recipients using
 // the given config.Config
-func dispatchMessages(messages chan *message.Message, c *Core) {
+func (c *Core) dispatchMessages(messages chan *message.Message) {
 
 	t := gotwilio.NewTwilioClient(c.TwilioSid, c.TwilioToken)
 
@@ -21,7 +21,11 @@ func dispatchMessages(messages chan *message.Message, c *Core) {
 
 		log.Printf("Dispatching message from %s", msg.Source)
 		for _, to := range c.Recipients {
-			go sendTwilioMessage(t, c.TwilioNumber, to, msg)
+            if c.Debug {
+                log.Printf("--> %s", msg.Text)
+            } else {
+			    go sendTwilioMessage(t, c.TwilioNumber, to, msg)
+            }
 		}
 	}
 }

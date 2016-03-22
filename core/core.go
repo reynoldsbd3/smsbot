@@ -4,14 +4,18 @@ import (
     "encoding/json"
     "log"
     "os"
-    "time"
     
     "github.com/reynoldsbd3/smsbot/message"
+    "github.com/reynoldsbd3/smsbot/time"
 )
 
 // Core represents the core configuration and behavior of smsbot. It coordinates
 // all message sources and provides facilities for building a message pipeline.
 type Core struct {
+    
+    // Sets server to debug mode, which prints what the server will do rather
+    // than actually taking action and potentially consuming any API's
+    Debug bool `json:"debug"`
     
     // Twilio account SID
     TwilioSid string `json:"twilioSid"`
@@ -27,7 +31,26 @@ type Core struct {
     
     // List of sources from which to get messages
     Sources *message.CompositeSource `json:"sources"`
+    
+    // Describes interval at which messages will be produced and dispatched
+    Time *time.RandomTicker `json:"time"`
 }
+
+
+// GetMessage retrieves a message from the configured message sources
+func (c *Core) GetMessage() (*message.Message, error) {
+    
+    if c.Debug {
+        return &message.Message{
+            Source: "debug system",
+            Text: "debug message",
+            URL: "example.com",
+        }, nil
+    }
+    
+    return c.Sources.GetMessage()
+}
+
 
 // LoadCore loads and returns a new Core using the given path to the
 // configuration file
@@ -51,16 +74,22 @@ func LoadCore(path string) (c *Core, err error) {
 func (c *Core) Run() {
     
     log.Print("Building mesage pipeline")
-    m := message.Timer(c.Sources, func() {
-        time.Sleep(3 * time.Second)
-    })
+    m := make(chan *message.Message, 1)
     
-    // Left in to test without actually dispatching messages
-    // go func() {
-    //     for msg := range m {
-    //         log.Printf("Message received: %s - %s", msg.Text, msg.URL)
-    //     }
-    // }()
+    go func() {
+        c.Time.Start()
+        
+        for t := range c.Time.C {
+            
+            log.Print("Got message after interval ", t)
+            msg, err := c.GetMessage()
+            if err != nil {
+                log.Print(err)
+            } else {
+                m <- msg
+            }
+        }
+    }()
     
-    go dispatchMessages(m, c)
+    go c.dispatchMessages(m)
 }
