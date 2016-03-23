@@ -16,13 +16,68 @@ type RandomTicker struct {
     C chan time.Time `json:"-"`
     
     // Mean interval of ticks
-    Duration time.Duration `json:"duration"`
+    Duration time.Duration
     
     // Minimum time after interval during which a tick can occur 
-    Minimum time.Duration `json:"minimum"`
+    Minimum time.Duration
     
     // Maximum time after interval during which a tick can occur
-    Maximum time.Duration `json:"maximum"`
+    Maximum time.Duration
+}
+
+
+// Gets the random offset to the internal ticker at which to actually send a
+// tick
+func (rt *RandomTicker) getSleepTime() time.Duration {
+    
+    t := rt.Minimum
+    
+    if rt.Minimum < rt.Maximum {
+        t += time.Duration(rand.Int63n(int64(rt.Maximum - rt.Minimum)))
+    }
+    
+    return t
+}
+
+
+// Sleep until the next time that is a multiple of rt.Duration (for example,
+// sleep until the next hour or day)
+func (rt *RandomTicker) sleepUntilNext() {
+        
+    // Sleep until the next occurence of the duration
+    nextTime := time.Now().Round(rt.Duration)
+    if time.Now().After(nextTime) {
+        nextTime = nextTime.Add(rt.Duration)
+    }
+    time.Sleep(nextTime.Sub(time.Now()))
+}
+
+
+// Start begins a goroutine that will send the time on the RandomTicker's
+// channel at the configured interval
+func (rt *RandomTicker) Start() {
+    
+    rt.C = make(chan time.Time, 1)
+    
+    go func() {
+        
+        // Start at a predictable time
+        rt.sleepUntilNext()
+        
+        // Start with a tick so we don't have to wait one full interval before
+        // things start to happen
+        go func() {
+            time.Sleep(rt.getSleepTime())
+            rt.C <- time.Now()
+        }()
+        
+        for range time.NewTicker(rt.Duration).C {
+            go func() {
+                time.Sleep(rt.getSleepTime())
+                rt.C <- time.Now()
+            }()
+        }
+    }()
 }
 
 
@@ -49,39 +104,4 @@ func (rt *RandomTicker) UnmarshalJSON(data []byte) error {
     if err != nil { return err }
         
     return nil
-}
-
-
-// Start begins a goroutine that will send the time on the RandomTicker's
-// channel at the configured interval
-func (rt *RandomTicker) Start() {
-    
-    rt.C = make(chan time.Time, 1)
-    
-    go func() {
-        
-        rand.Seed(time.Now().UTC().UnixNano())
-        
-        // Sleep until the next occurence of the interval
-        nextTime := time.Now().Round(rt.Duration)
-        if time.Now().After(nextTime) {
-            nextTime = nextTime.Add(rt.Duration)
-        }
-        time.Sleep(nextTime.Sub(time.Now()))
-        
-        for t := range time.NewTicker(rt.Duration).C {
-            
-            time.Sleep(rt.Minimum)
-            t = t.Add(rt.Minimum)
-            
-            // Int63n must have arg > 0
-            if rt.Maximum > rt.Minimum {
-                r := time.Duration(rand.Int63n(int64(rt.Maximum - rt.Minimum)))
-                time.Sleep(r)
-                t = t.Add(r)
-            }
-            
-            rt.C <- t
-        }
-    }()
 }
